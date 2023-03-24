@@ -9,6 +9,9 @@ TYPE_MAPPING = {
     "bytes32": "str",
     "bytes": "bytes",
     "bool": "bool",
+    "payable": "str",
+    "uint120": "int",
+    "bytes": "str"
 }
 
 
@@ -28,15 +31,21 @@ def parse_struct_definitions(filepath: Path):
     return ret
 
 
-
+def escape_list(s) -> str:
+    print(s)
+    if s.endswith("[]"):
+        stripped_type = s[:-2]
+        subtype = TYPE_MAPPING.get(stripped_type, stripped_type)
+        return escape_list('List[' + subtype + ']')
+    return TYPE_MAPPING.get(s, s)
 
 def parse_fields(fields_str: str) -> list[tuple[str, str]]:
-    field_pattern = r"(\w+)\s+(\w+);"
+    field_pattern = r"([\w\[\]]+)\s+(\w+);"
     return re.findall(field_pattern, fields_str)
 
 
 def map_type(solidity_type:str) -> str:
-    return TYPE_MAPPING.get(solidity_type, solidity_type)
+    return escape_list(solidity_type)
 
 
 def to_python_dataclasses(structs: dict[str, list[tuple[str, str]]]):
@@ -58,7 +67,6 @@ class {name}:
 def main():
     input_file = Path("src/structs.sol")  # Replace with your input file path
     structs = parse_struct_definitions(input_file)
-    print(structs)
     dataclasses_str = to_python_dataclasses(structs)
 
     output_file = Path("output.py")  # Replace with your desired output file path

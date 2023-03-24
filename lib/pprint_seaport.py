@@ -5,6 +5,8 @@ from typing import List, Tuple, Iterable, Optional
 from enum import Enum
 from pprint import pprint
 import sys
+from seaport_enums import *
+from seaport_structs import *
 
 def call_cast(command: str, input: str) -> str:
     """Call the cast command and return the output."""
@@ -118,74 +120,6 @@ def parse_decode_data(output: str) -> Tuple[str, str]:
     _, orders, fulfillments = [x.strip() for x in output.strip().split("\n")]
     return orders, fulfillments
 
-
-class OrderType(Enum):
-    FULL_OPEN = 0
-    PARTIAL_OPEN = 1
-    FULL_RESTRICTED = 2
-    PARTIAL_RESTRICTED = 3
-    CONTRACT = 4
-
-
-class ItemType(Enum):
-    NATIVE = 0
-    ERC20 = 1
-    ERC721 = 2
-    ERC1155 = 3
-    ERC721_WITH_CRITERIA = 4
-    ERC1155_WITH_CRITERIA = 5
-
-
-@dataclass
-class OfferItem:
-    item_type: ItemType
-    token: str
-    identifier_or_criteria: int
-    start_amount: int
-    end_amount: int
-
-
-@dataclass
-class ConsiderationItem:
-    item_type: ItemType
-    token: str
-    identifier_or_criteria: int
-    start_amount: int
-    end_amount: int
-    recipient: str
-
-
-@dataclass
-class OrderParameters:
-    offerer: str
-    zone: str
-    offer: List[OfferItem]
-    consideration: List[ConsiderationItem]
-    order_type: OrderType
-    start_time: int
-    end_time: int
-    zone_hash: str
-    salt: int
-    conduit_key: str
-    total_original_consideration_items: int
-
-
-@dataclass
-class Order:
-    parameters: OrderParameters
-    signature: str
-
-
-@dataclass
-class FulfillmentComponent:
-    order_index: int
-    item_index: int
-
-
-@dataclass
-class Fulfillment:
-    offer_components: List[FulfillmentComponent]
-    consideration_components: List[FulfillmentComponent]
 
 
 def parse_offer_item(offer_item_data: tuple) -> OfferItem:
