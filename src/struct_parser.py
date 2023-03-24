@@ -18,11 +18,9 @@ TYPE_MAPPING = {
 def parse_struct_definitions(filepath: Path):
     with open(filepath, "r") as f:
         file_content = f.read()
-    print(file_content)
 
     struct_pattern = r"struct\s+(\w+)\s*\{([\s\S]*?)\}"
     struct_defs = re.findall(struct_pattern, file_content)
-    print(struct_defs)
     ret: dict[str,list[tuple[str,str]]] = {}
 
     for name, fields_str in struct_defs:
@@ -32,7 +30,6 @@ def parse_struct_definitions(filepath: Path):
 
 
 def escape_list(s) -> str:
-    print(s)
     if s.endswith("[]"):
         stripped_type = s[:-2]
         subtype = TYPE_MAPPING.get(stripped_type, stripped_type)
